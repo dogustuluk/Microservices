@@ -12,9 +12,6 @@ namespace FreeCourse.Services.Catalog.Models
         
         public string Name { get; set; }
 
-        public string Description { get; set; }
-
-        [BsonRepresentation(BsonType.Decimal128)]
         public decimal Price { get; set; }
 
         public string UserId { get; set; } //string tutuyoruz çünkü identity tarafında kullanıcı id'sini string ve random bir değerle(guid) olarak tutucam.
