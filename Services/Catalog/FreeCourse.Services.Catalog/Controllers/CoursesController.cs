@@ -9,15 +9,15 @@ namespace FreeCourse.Services.Catalog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    internal class CoursesController : CustomBaseController
+    public class CoursesController : CustomBaseController
     {
         private readonly ICourseService _courseService;
 
-        internal CoursesController(ICourseService courseService)
+        public CoursesController(ICourseService courseService)
         {
             _courseService = courseService;
         }
-
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var response = await _courseService.GetAllAsync();
@@ -35,6 +35,7 @@ namespace FreeCourse.Services.Catalog.Controllers
 
         }
 
+        [HttpGet]
         [Route("/api/[controller]/GetAllByUserId/{userId}")] //api/courses/getallbyuserid/5 url yapısı
         public async Task<IActionResult> GetAllByUserId(string userId)
         {
