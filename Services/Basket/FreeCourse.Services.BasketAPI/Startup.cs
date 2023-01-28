@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FreeCourse.Services.PhotoStock
+namespace FreeCourse.Services.BasketAPI
 {
     public class Startup
     {
@@ -27,20 +25,11 @@ namespace FreeCourse.Services.PhotoStock
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.Authority = Configuration["IdentityServerURL"];
-                options.Audience = "resource_photo_stock";
-                options.RequireHttpsMetadata = false;
-            });
 
-            services.AddControllers(opt =>
-            {
-                opt.Filters.Add(new AuthorizeFilter());
-            });
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FreeCourse.Services.PhotoStock", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FreeCourse.Services.BasketAPI", Version = "v1" });
             });
         }
 
@@ -51,13 +40,10 @@ namespace FreeCourse.Services.PhotoStock
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FreeCourse.Services.PhotoStock v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FreeCourse.Services.BasketAPI v1"));
             }
-            app.UseStaticFiles(); //bununla beraber wwwroot içerisindeki static dosyalara public olarak dýþarýdan eriþebiliriz.
 
             app.UseRouting();
-
-            app.UseAuthentication();
 
             app.UseAuthorization();
 
