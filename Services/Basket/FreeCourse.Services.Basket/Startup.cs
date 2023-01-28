@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,6 +35,9 @@ namespace FreeCourse.Services.Basket
         {
             //burada subId beklediðimiz için bir policy yaratmamýz gerekir tüm controllerlarda authorize filter'ý geçmek için. Yani burada authenticate olmuþ bir kullanýcý mutlaka lazýmdýr diye belirtiyoruz.
             var requireAuthorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+            //mapleme kýsmýný (nameIdentifier yerine biz sub olarak almak istiyoruz.)
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
             //api'yi identity server ile koruma
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
