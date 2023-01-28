@@ -44,6 +44,9 @@ namespace FreeCourse.Services.PhotoStock.Controllers
 
         public IActionResult PhotoDelete(string photoUrl)
         {
+            /*db olsaydı
+             * photoUrl yerine veri tabanındaki id'sini almamız gerekirdi. daha sonra id'den photoUrl'ini bulup, ilgili klasörden sileriz.
+             */
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/photos", photoUrl);
             if (!System.IO.File.Exists(path))
             {
