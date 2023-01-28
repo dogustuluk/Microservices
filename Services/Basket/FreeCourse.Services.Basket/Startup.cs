@@ -39,7 +39,7 @@ namespace FreeCourse.Services.Basket
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.Authority = Configuration["IdentityServerUrl"];
-                options.Audience = "";
+                options.Audience = "resource_basket";
                 options.RequireHttpsMetadata = false;
             });
 
