@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace FreeCourse.Services.Order.Domain.OrderAggregate
 {
     /*EF Core features
-     * owned types
+     * owned types --> db'de bir karşılığı olmayacağı için bu tipe sahip sınıfları dbcontext içerisinde dbset yapmayız.
      * shadow property
      * backing field
      * özellikleri kullanıldı.
