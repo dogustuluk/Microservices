@@ -23,7 +23,10 @@ namespace FreeCourse.Services.Order.Domain.OrderAggregate
         //relations
         private readonly List<OrderItem> _orderItems; //backing-field olur. Eğer ki entity framework core içerisinde okuma ve yazma işlemini property'den ziyade bir field'dan yapıyorsak buna --> backing-field olarak adlandırılır. amacımız encapsulation'ı arttırmak. Çünkü Order üzerinden kimse OrderItem'a data eklemesin, benim metodum üzerinden eklesin.
         public IReadOnlyCollection<OrderItem> OrderItems => _orderItems; //direkt olarak kapsülleme işlemi yaptık.
-
+        public Order()
+        {
+            //alt satırda custom ctor yaptığımız için bu default olarak gelmez, bunu kendimiz elle yazmak zorundayız.
+        }
         public Order(string buyerId, Address address)
         {
             _orderItems = new List<OrderItem>();

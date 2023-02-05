@@ -15,7 +15,10 @@ namespace FreeCourse.Services.Order.Domain.OrderAggregate
         public string PictureUrl { get; private set; }
         public Decimal Price { get; private set; }
         //navigation property'sini eklemiyoruz çünkü bunun tek başına eklenmesini istemiyoruz. Bunu Order ekleyebilir çünkü Aggregateroot'umuzdur.
-        
+        public OrderItem()
+        {
+
+        }
         public OrderItem(string productId, string productName, string pictureUrl, decimal price)
         {
             ProductId = productId;
