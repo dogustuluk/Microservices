@@ -16,6 +16,13 @@ namespace FreeCourse.Services.Order.Infrastructure
         {
         }
 
+        //public override int SaveChanges()
+        //{
+        //    //eğer birden fazla aggregate'imiz varsa event'leri kullanmalıyız bu aggregate'ler birbirleriyle haberleşme yoluna girecekse.
+        //    //event'ler burada fırlatılır.
+        //    return base.SaveChanges();
+        //}
+
         public DbSet<Domain.OrderAggregate.Order> Orders { get; set; }
         public DbSet<Domain.OrderAggregate.OrderItem> OrderItems { get; set; }
 
