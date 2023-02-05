@@ -16,7 +16,7 @@ namespace FreeCourse.Services.Order.Application.Handlers
 {
     //eğer birden fazla query'i tek bir handle'da yapmak istersek bir tane daha interface'i implemente et.
     //burada her bir query'e karşı bir tane handle oluşturuyoruz. Bunu controller seviyesinde yapmış olucaz.
-    class GetOrdersByUserIdQueryHandler : IRequestHandler<GetOrdersByUserIdQuery, Response<List<OrderDto>>>
+    public class GetOrdersByUserIdQueryHandler : IRequestHandler<GetOrdersByUserIdQuery, Response<List<OrderDto>>>
     {
         //eğer repository kullanıyorsak burada context yerine ilgili repository'i geçmemiz gerekir.
         //ama direkt olarak context'i kullanırsak çok daha performanslı sorgular yazabiliriz.
