@@ -47,7 +47,7 @@ namespace FreeCourse.Web.Services
             throw new System.NotImplementedException();
         }
 
-        public async Task<Response<bool>> SignIn(SignInInput signInInput)
+        public async Task<Response<bool>> SignIn(SigninInput signinInput)
         {
             //token endpoint'ine git. Ardından http olarak ayarladık yapıyı fakat GetDiscoveryDocumentAsync isteği https olarak yapar bu durumu elle kapatmamız gerekmektedir. bunu Policy yazarak düzeltiriz.
             var disco = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
@@ -62,10 +62,10 @@ namespace FreeCourse.Web.Services
             //akış tipini yap. PasswordTokenRequest hazır bir sınıftır. içerisinde client_id,client_secret,grant_type,username ve password alır.
             var passwordTokenRequest = new PasswordTokenRequest
             {
-                ClientId = _clientSettings.WebMvcClientForUser.ClientId,
-                ClientSecret = _clientSettings.WebMvcClientForUser.ClientSecret,
-                UserName = signInInput.Email,
-                Password = signInInput.Password,
+                ClientId = _clientSettings.WebClientForUser.ClientId,
+                ClientSecret = _clientSettings.WebClientForUser.ClientSecret,
+                UserName = signinInput.Email,
+                Password = signinInput.Password,
                 Address = disco.TokenEndpoint //hangi adrese istek yapacağını bulur.
             };
             //istek yapmaya hazırız, gerekli bilgileri verdik.
@@ -119,7 +119,7 @@ namespace FreeCourse.Web.Services
             //access token, refresh token ve süreyi cookie içerisinde tutuyoruz.
 
             //beni hatırla durumunu kontrol et
-            authenticationProperties.IsPersistent = signInInput.IsRemember;
+            authenticationProperties.IsPersistent = signinInput.IsRemember;
 
             //cookie oluşmuş oldu
             await _httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,claimsPrincipal,authenticationProperties);

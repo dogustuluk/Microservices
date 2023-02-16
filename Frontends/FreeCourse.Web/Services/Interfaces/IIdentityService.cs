@@ -11,7 +11,7 @@ namespace FreeCourse.Web.Services.Interfaces
         /// Kullanıcının login olmasıyla ilgili email ve şifresini gönderecek ve identity server'a gidip token alacak.
         /// </summary>
         /// <returns></returns>
-        Task<Response<bool>> SignIn(SignInInput signInInput);
+        Task<Response<bool>> SignIn(SigninInput signinInput);
         /// <summary>
         /// Access token'ın ömrü dolduğunda elimizdeki refresh token ile beraber cookie'den refresh token'ı okuyup yeni bir access token elde eder.
         /// </summary>

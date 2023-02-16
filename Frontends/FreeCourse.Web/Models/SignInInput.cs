@@ -2,14 +2,14 @@
 
 namespace FreeCourse.Web.Models
 {
-    public class SignInInput
+    public class SigninInput
     {
         [Required]
         [Display(Name = "Email Adresiniz")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
         [Required]
         [Display(Name = "Şifreniz")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
         [Display(Name = "Beni Hatırla")]
         public bool IsRemember { get; set; }
     }
