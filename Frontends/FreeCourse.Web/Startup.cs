@@ -1,4 +1,6 @@
 using FreeCourse.Web.Models;
+using FreeCourse.Web.Services;
+using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +25,10 @@ namespace FreeCourse.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //HttpContextAccessor
+            services.AddHttpContextAccessor();
+            //httpclient
+            services.AddHttpClient<IIdentityService,IdentityService>();
             //options pattern
             services.Configure<ClientSettings>(Configuration.GetSection("ClientSettings"));
             services.Configure<ServiceApiSettings>(Configuration.GetSection("ServiceApiSettings"));
