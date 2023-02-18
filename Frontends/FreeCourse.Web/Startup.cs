@@ -1,3 +1,4 @@
+using FreeCourse.Web.Handler;
 using FreeCourse.Web.Models;
 using FreeCourse.Web.Services;
 using FreeCourse.Web.Services.Interfaces;
@@ -40,7 +41,8 @@ namespace FreeCourse.Web
             {
                 //UserService içerisinde kullanmýþ olduðum httpClient'ýn base uri'si alt satýda vermiþ olduðum BaseUri olacaktýr.
                 opt.BaseAddress = new Uri(serviceApiSettings.IdentityBaseUri);
-            });
+            })//handler delegate'i ekle
+                .AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
 
            
 
