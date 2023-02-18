@@ -42,7 +42,7 @@ namespace FreeCourse.Web.Services
             //endpoint'i al
             var disco = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
             {
-                Address = _serviceApiSettings.BaseUri,
+                Address = _serviceApiSettings.IdentityBaseUri,
                 Policy = new DiscoveryPolicy { RequireHttps = false }
             });
             if (disco.IsError)
@@ -91,7 +91,7 @@ namespace FreeCourse.Web.Services
             //endpoint'i al
             var disco = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
             {
-                Address = _serviceApiSettings.BaseUri,
+                Address = _serviceApiSettings.IdentityBaseUri,
                 Policy = new DiscoveryPolicy { RequireHttps = false }
             });
             if (disco.IsError)
@@ -119,7 +119,7 @@ namespace FreeCourse.Web.Services
             //token endpoint'ine git. Ardından http olarak ayarladık yapıyı fakat GetDiscoveryDocumentAsync isteği https olarak yapar bu durumu elle kapatmamız gerekmektedir. bunu Policy yazarak düzeltiriz.
             var disco = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
             {
-                Address = _serviceApiSettings.BaseUri,
+                Address = _serviceApiSettings.IdentityBaseUri,
                 Policy = new DiscoveryPolicy { RequireHttps = false }
             });
             if (disco.IsError)
