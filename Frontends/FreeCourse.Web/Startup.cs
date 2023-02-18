@@ -35,6 +35,9 @@ namespace FreeCourse.Web
 
             var serviceApiSettings = Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
 
+            //delegate handler
+            services.AddScoped<ResourceOwnerPasswordTokenHandler>();
+
             //httpclient
             services.AddHttpClient<IIdentityService,IdentityService>();
             services.AddHttpClient<IUserService,UserService>(opt =>
