@@ -1,3 +1,4 @@
+using FreeCourse.Shared.Services;
 using FreeCourse.Web.Handler;
 using FreeCourse.Web.Models;
 using FreeCourse.Web.Services;
@@ -33,6 +34,9 @@ namespace FreeCourse.Web
             //HttpContextAccessor
             services.AddHttpContextAccessor();
 
+            //sharedService
+            services.AddScoped<ISharedIdentityService, SharedIdentityService>();
+
             var serviceApiSettings = Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
 
             //delegate handler
@@ -40,6 +44,12 @@ namespace FreeCourse.Web
 
             //httpclient
             services.AddHttpClient<IIdentityService,IdentityService>();
+
+            services.AddHttpClient<ICatalogService,CatalogService>(opt =>
+            {
+                opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.Catalog.Path}");
+            });
+
             services.AddHttpClient<IUserService,UserService>(opt =>
             {
                 //UserService içerisinde kullanmýþ olduðum httpClient'ýn base uri'si alt satýda vermiþ olduðum BaseUri olacaktýr.
