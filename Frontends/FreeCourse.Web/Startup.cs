@@ -41,14 +41,17 @@ namespace FreeCourse.Web
 
             //delegate handler
             services.AddScoped<ResourceOwnerPasswordTokenHandler>();
+            services.AddScoped<ClientCredentialTokenHandler>();
 
             //httpclient
+            services.AddHttpClient<IClientCredentialTokenService, ClientCredentialTokenService>();
+
             services.AddHttpClient<IIdentityService,IdentityService>();
 
             services.AddHttpClient<ICatalogService,CatalogService>(opt =>
             {
                 opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.Catalog.Path}");
-            });
+            }).AddHttpMessageHandler<ClientCredentialTokenHandler>(); 
 
             services.AddHttpClient<IUserService,UserService>(opt =>
             {
