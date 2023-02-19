@@ -60,7 +60,8 @@ namespace FreeCourse.Web
             })//handler delegate'i ekle
                 .AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
 
-           
+            //IClientAccessTokenService
+            services.AddAccessTokenManagement();
 
             //Cookie Settings
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opts =>

@@ -10,16 +10,16 @@ namespace FreeCourse.Shared.Dtos
      */
     public class Response<T>
     {
-        public T Data { get; private set; }
+        public T Data { get;  set; }
 
         /*jsonignore
          * kendi içerimizde kullanmak istiyoruz. response'ın dönüş tipini belirlerken buradan faydalanıyoruz ama bu property'nin response'ın içerisinde olmasına gerek yok. bundan dolayı jsonignore ile işaretleme yapıyoruz.
          */
         [JsonIgnore]
-        public int StatusCode { get; private set; }
+        public int StatusCode { get;  set; }
 
         [JsonIgnore]
-        public bool IsSuccessfull { get; private set; }
+        public bool IsSuccessfull { get;  set; }
 
         public List<string> Errors { get; set; }
 
