@@ -31,7 +31,7 @@ namespace FreeCourse.Services.PhotoStock.Controllers
 
                 //endpoint'i çağıran yere dönüyor olucaz ve çağıran yer ise url'i kaydediyor olacak.
                 //http://www.photostock.api.com/photos/dosyaAdi.jpgf
-                var returnPath = "photos/" + photo.FileName;
+                var returnPath = photo.FileName;
 
                 //dto nesnesi oluştur ve geriye dön
                 PhotoDto photoDto = new() { Url = returnPath };
