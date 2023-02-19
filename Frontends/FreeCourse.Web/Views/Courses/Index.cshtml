@@ -16,8 +16,10 @@
                             <tr>
                                 <th>Resim</th>
                                 <th>Kurs Adı</th>
+                                <th>Kurs Kategorisi</th>
                                 <th>Kurs Fiyatı</th>
                                 <th>Kurs Süresi</th>
+                                <th>Kurs İşlemleri</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -26,8 +28,13 @@
                                 <tr>
                                     <td></td>
                                     <td>@item.Name</td>
+                                    <td>@item.Category.Name</td>
                                     <td>@item.Price</td>
                                     <td>@item.Feature.Duration</td>
+                                    <td>
+                                        <a asp-controller="Courses" asp-action="Update" asp-route-id="@item.Id" class="btn btn-success btn-sm">Güncelle</a>
+                                        <a asp-controller="Courses" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Sil</a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>

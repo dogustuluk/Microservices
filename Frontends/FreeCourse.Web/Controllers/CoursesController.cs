@@ -22,7 +22,7 @@ namespace FreeCourse.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _catalogService.GetAllCourseByUserIdAsync(_sharedIdentityService.GetUserId) );
+            return View(await _catalogService.GetAllCourseByUserIdAsync(_sharedIdentityService.GetUserId));
         }
         public async Task<IActionResult> Create()
         {
@@ -43,14 +43,68 @@ namespace FreeCourse.Web.Controllers
             }
             //ViewModel içerisindeki UserId'yi doldur.
             courseCreateInput.UserId = _sharedIdentityService.GetUserId;
-            
-            var result = await _catalogService.CreateCourseAsync(courseCreateInput);
-            if (result == false)
+
+            await _catalogService.CreateCourseAsync(courseCreateInput);
+            //if (result == false)
+            //{
+            //    //hata mesajı ver
+            //    //loglama yap
+            //}
+
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> Update(string id)
+        {
+            //önce ilgili id'ye sahip course'u bul
+            var course = await _catalogService.GetByCourseId(id);
+            //category alınmalı çünkü kullanıcı kategoriyi değiştirebilir.
+            var categories = await _catalogService.GetAllCategoryAsync();
+
+            if (course == null)
             {
-                //hata mesajı ver
-                //loglama yap
+                //sayfaya yönlendirme yapılabilir, loglama olabilir, alert çıkartılabilir.
+                RedirectToAction(nameof(Index));
             }
 
+            ViewBag.categoryList = new SelectList(categories, "Id", "Name",course.Id);//seçilen kursu al
+            //gelen course'u doldur.
+            CourseUpdateInput courseUpdateInput = new()
+            {
+                Id = course.Id,
+                Name = course.Name,
+                Description = course.Description,
+                Price = course.Price,
+               // Feature = new FeatureViewModel { Duration = course.Feature.Duration }
+               Feature = course.Feature,
+               CategoryId = course.CategoryId,
+               UserId = course.UserId,
+               Picture = course.Picture
+                
+            };
+            return View(courseUpdateInput);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> Update(CourseUpdateInput courseUpdateInput)
+        {
+            var categories = await _catalogService.GetAllCategoryAsync();
+            ViewBag.categoryList = new SelectList(categories, "Id", "Name", courseUpdateInput.Id);
+
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            var response = await _catalogService.UpdateCourseAsync(courseUpdateInput);
+            if (response == false)
+            {
+                //hata ver, loglama yap....
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _catalogService.DeleteCourseAsync(id);
+            //true-false durumunu da yap
             return RedirectToAction(nameof(Index));
         }
     }

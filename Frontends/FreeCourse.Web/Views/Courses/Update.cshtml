@@ -1,21 +1,23 @@
-﻿@model CourseCreateInput
+﻿@model CourseUpdateInput
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Update";
 }
 
 <div class="row">
     <div class="col-md-8 offset-md-2">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Kurs Ekleme</h5>
+                <h5 class="card-title">Kurs Güncelleme</h5>
 
-                <form asp-controller="Courses" asp-action="Create" method="post" enctype="multipart/form-data">
+                <form asp-controller="Courses" asp-action="Update" method="post" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="Picture" />
 
                     <div class="mb-3">
                         <label for="exampleFormControlInput1" class="form-label" asp-for="CategoryId"></label>
                         <select asp-for="CategoryId" class="form-control" asp-items="@ViewBag.categoryList">
-                            <option value="">Kategori Seçiniz</option>
                         </select>
                         <span class="text-danger" asp-validation-for="CategoryId"></span>
                     </div>
@@ -31,7 +33,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" asp-for="Description"></label>
-                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <textarea asp-for="Description" class="form-control"> </textarea>
                         <span class="text-danger" asp-validation-for="Description"></span>
                     </div>
                     <div class="mb-3">
@@ -40,9 +42,11 @@
                         <span class="text-danger" asp-validation-for="Feature.Duration"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Kursu Kaydet</button>
+                    <button type="submit" class="btn btn-primary">Kursu Güncelle</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
