@@ -1,4 +1,5 @@
-﻿using FreeCourse.Web.Models.PhotoStocks;
+﻿using FreeCourse.Shared.Dtos;
+using FreeCourse.Web.Models.PhotoStocks;
 using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -51,13 +52,13 @@ namespace FreeCourse.Web.Services
             //
             var response = await _httpClient.PostAsync("photos", multipartContent);
             //cevap almamız gerekir
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
-
             //photo url gelecek
-            return await response.Content.ReadFromJsonAsync<PhotoViewModel>();
+            var responseSuccess = await response.Content.ReadFromJsonAsync<Response<PhotoViewModel>>();
+            return responseSuccess.Data;
         }
     }
 }
