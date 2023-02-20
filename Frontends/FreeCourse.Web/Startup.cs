@@ -96,6 +96,7 @@ namespace FreeCourse.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            //uygulamayý canlýya alýrsak buraya yazarýz (production esnasýnda) -> app.UseExceptionHandler("/Home/Error");
             app.UseStaticFiles();
 
             app.UseRouting();

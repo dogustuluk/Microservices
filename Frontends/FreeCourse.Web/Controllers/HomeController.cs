@@ -1,5 +1,7 @@
-﻿using FreeCourse.Web.Models;
+﻿using FreeCourse.Web.Exceptions;
+using FreeCourse.Web.Models;
 using FreeCourse.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,6 +34,15 @@ namespace FreeCourse.Web.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            //fırlatılan hatayı yakala
+            var errorFeature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            //Kendi fırlattığımız hatayı yakala
+            if (errorFeature != null && errorFeature.Error is UnAuthorizeException)
+            {
+                //direkt olarak çıkış yaptır ki eldeki cookie silinsin. Kullanıcı 60 gün(kendimiz verdik bu değeri token için) boyunca sitemize hiç girmezse buraya düşer.
+                return RedirectToAction(nameof(AuthController.Logout), "Auth");
+            }
+
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
