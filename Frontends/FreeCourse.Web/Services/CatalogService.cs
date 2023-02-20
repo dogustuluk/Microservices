@@ -116,7 +116,18 @@ namespace FreeCourse.Web.Services
 
         public async Task<bool> UpdateCourseAsync(CourseUpdateInput courseUpdateInput)
         {
+            //photo upload
+            var resultPhotoService = await _photoStockService.UploadPhoto(courseUpdateInput.PhotoFormFile);
+            if (resultPhotoService != null)
+            {
+                //eski resmi sil
+                await _photoStockService.DeletePhoto(courseUpdateInput.Picture); //buradaki picture bize view sayfasında hidden olarak tanımladığımız için geliyor.
+                //yenisini yükle
+                courseUpdateInput.Picture = resultPhotoService.Url;
+            }
+
             var response = await _client.PutAsJsonAsync<CourseUpdateInput>("courses", courseUpdateInput);
+
             return response.IsSuccessStatusCode;
         }
     }
