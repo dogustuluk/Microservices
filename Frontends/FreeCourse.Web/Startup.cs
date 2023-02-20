@@ -1,4 +1,5 @@
 using FreeCourse.Shared.Services;
+using FreeCourse.Web.Extensions;
 using FreeCourse.Web.Handler;
 using FreeCourse.Web.Helpers;
 using FreeCourse.Web.Models;
@@ -44,34 +45,14 @@ namespace FreeCourse.Web
             services.AddScoped<ResourceOwnerPasswordTokenHandler>();
             services.AddScoped<ClientCredentialTokenHandler>();
 
-            //httpclient
-            services.AddHttpClient<IClientCredentialTokenService, ClientCredentialTokenService>();
-
-            services.AddHttpClient<IIdentityService,IdentityService>();
-
-            services.AddHttpClient<ICatalogService,CatalogService>(opt =>
-            {
-                opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.Catalog.Path}");
-            }).AddHttpMessageHandler<ClientCredentialTokenHandler>();
-
-            //photostock
-            services.AddHttpClient<IPhotoStockService, PhotoStockService>(opt =>
-            {
-                opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.PhotoStock.Path}");
-            }).AddHttpMessageHandler<ClientCredentialTokenHandler>();
-
             //photoHelper
             services.AddSingleton<PhotoHelper>();
 
-            services.AddHttpClient<IUserService,UserService>(opt =>
-            {
-                //UserService içerisinde kullanmýþ olduðum httpClient'ýn base uri'si alt satýda vermiþ olduðum BaseUri olacaktýr.
-                opt.BaseAddress = new Uri(serviceApiSettings.IdentityBaseUri);
-            })//handler delegate'i ekle
-                .AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
-
             //IClientAccessTokenService
             services.AddAccessTokenManagement();
+
+            //service extension
+            services.AddHttpClientServices(Configuration);
 
             //Cookie Settings
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opts =>
