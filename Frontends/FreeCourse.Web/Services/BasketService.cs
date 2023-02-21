@@ -15,10 +15,11 @@ namespace FreeCourse.Web.Services
     public class BasketService : IBasketService
     {
         private readonly HttpClient _httpClient;
-
-        public BasketService(HttpClient httpClient)
+        private readonly IDiscountService _discountService;
+        public BasketService(HttpClient httpClient, IDiscountService discountService)
         {
             _httpClient = httpClient;
+            _discountService = discountService;
         }
 
         public async Task AddBasketItem(BasketItemViewModel basketItemViewModel)
@@ -45,14 +46,45 @@ namespace FreeCourse.Web.Services
             await SaveOrUpdate(basket);
         }
 
-        public Task<bool> ApplyDiscount(string discountCode)
+        public async Task<bool> ApplyDiscount(string discountCode)
         {
-            throw new System.NotImplementedException();
+            //önce ilk indirim kuponunu iptal et
+            await CancelApplyDiscount();
+            //basket'i al
+            var basket = await Get();
+            if (basket == null || basket.DiscountCode == null)
+            {
+                return false;
+            }
+            //önce indirimi al
+            var hasDiscount = await _discountService.GetDiscount(discountCode);
+            if (hasDiscount == null)
+            {
+                return false;
+            }
+            //hasDiscount varsa
+            basket.DiscountRate = hasDiscount.Rate;
+            basket.DiscountCode = hasDiscount.Code;
+
+            await SaveOrUpdate(basket);
+            return true;
         }
 
-        public Task<bool> CancelApplyDiscount()
+        public async Task<bool> CancelApplyDiscount()
         {
-            throw new System.NotImplementedException();
+            //önce basket'i al.basket'in içerisinde iptal edicez. 
+            var basket = await Get();
+            if (basket != null || basket.DiscountCode == null)
+            {
+                return false;
+            }
+
+            //mevcut olan indirim kodunu null'a set et
+            basket.DiscountCode = null;
+            //basket'i tekrar update et.
+            await SaveOrUpdate(basket);
+            return true;
+
         }
 
         public async Task<bool> Delete()
