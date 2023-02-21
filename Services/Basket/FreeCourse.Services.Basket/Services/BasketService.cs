@@ -9,7 +9,7 @@ namespace FreeCourse.Services.Basket.Services
     public class BasketService : IBasketService
     {
         private readonly RedisService _redisService;
-public BasketService(RedisService redisService)
+        public BasketService(RedisService redisService)
         {
             _redisService = redisService;
         }

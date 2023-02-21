@@ -34,7 +34,7 @@ namespace FreeCourse.Web.Models.Baskets
         }
         public decimal TotalPrice
         {
-            get => _basketItems.Sum(x => x.GetCurrentPrice * x.Quantity);
+            get => _basketItems.Sum(x => x.GetCurrentPrice);
         }
         //indirim olup olmadığının kontrolü
         public bool HasDiscount
