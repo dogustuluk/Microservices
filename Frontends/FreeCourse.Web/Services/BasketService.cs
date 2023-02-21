@@ -1,10 +1,17 @@
-﻿using FreeCourse.Web.Models.Baskets;
+﻿using FreeCourse.Shared.Dtos;
+using FreeCourse.Web.Models.Baskets;
 using FreeCourse.Web.Services.Interfaces;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace FreeCourse.Web.Services
 {
+    /*metotlar
+     * Buradaki AddBasketItem ve RemoveBasketItem metotlarım BasketsController'da yok. Bu metotlar bize kolaylık sağlar. Bu metotlar içerisinde gerekli gördüğümüz implementasyon kodlarını kendimiz yazdık.
+     * Discount metotlarını henüz kodlamadık çünkü daha discount microservice'i ile haberleşme sağlamadık. İlerleyen zamanlarda eklenecektir.
+     */
     public class BasketService : IBasketService
     {
         private readonly HttpClient _httpClient;
@@ -14,9 +21,28 @@ namespace FreeCourse.Web.Services
             _httpClient = httpClient;
         }
 
-        public Task AddBasketItem(BasketItemViewModel basketItemViewModel)
+        public async Task AddBasketItem(BasketItemViewModel basketItemViewModel)
         {
-            throw new System.NotImplementedException();
+            //basket'i  al
+            var basket = await Get();
+
+            if (basket != null)
+            {
+                //eklenen item daha önce yoksa
+                if (!basket.BasketItems.Any(x => x.CourseId == basketItemViewModel.CourseId))
+                {
+                    basket.BasketItems.Add(basketItemViewModel);
+                }
+            }
+            //sepette ilgili basket oluşmadıysa
+            else
+            {
+                basket = new BasketViewModel(); //içerisinde userId belirtmemize gerek yok çünkü basket microservice'inde(BasketsController'da) shared identity service'ten çekiyoruz userId'yi.
+                //
+                basket.BasketItems.Add(basketItemViewModel);
+            }
+            //save or update yap
+            await SaveOrUpdate(basket);
         }
 
         public Task<bool> ApplyDiscount(string discountCode)
@@ -29,24 +55,74 @@ namespace FreeCourse.Web.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> Delete()
+        public async Task<bool> Delete()
         {
-            throw new System.NotImplementedException();
+            var result = await _httpClient.DeleteAsync("baskets");
+
+            return result.IsSuccessStatusCode;
         }
 
-        public Task<BasketViewModel> Get()
+        public async Task<BasketViewModel> Get()
         {
-            throw new System.NotImplementedException();
+            //mevcut datayı al
+            var response = await _httpClient.GetAsync("baskets");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            //BasketsController'daki Get metodundan BasketDto gelir. Bunu BasketViewModel'a dönüştürmemiz gereklidir.
+            var basketViewModel = await response.Content.ReadFromJsonAsync<Response<BasketViewModel>>();
+
+            return basketViewModel.Data;
+
+            //discount tanımla
         }
 
-        public Task<bool> RemoveBasketItem(string courseId)
+        public async Task<bool> RemoveBasketItem(string courseId)
         {
-            throw new System.NotImplementedException();
+            //basket'i al
+            var basket = await Get();
+
+            if (basket == null)
+            {
+                return false;
+            }
+
+            var deleteBasketItem = basket.BasketItems.FirstOrDefault(x => x.CourseId == courseId);
+            if (deleteBasketItem == null)
+            {
+                return false;
+            }
+
+            var deleteResult = basket.BasketItems.Remove(deleteBasketItem);
+
+            if (!deleteResult)
+            {
+                return false;
+            }
+
+            //sepette son ürünü sildiyse indirimi null'a çek
+            if (!basket.BasketItems.Any())
+            {
+                basket.DiscountCode = null;
+            }
+
+            return await SaveOrUpdate(basket);
         }
 
-        public Task<bool> SaveOrUpdate(BasketViewModel basketViewModel)
+        public async Task<bool> SaveOrUpdate(BasketViewModel basketViewModel)
         {
-            throw new System.NotImplementedException();
+            /*userId desc
+             * Sadece userId'yi set edip gönder.
+             * Basket microservice'i içerisinde BasketController'ın constructor'ında biz userId için gerekli olan sharedIdentity'i aldık, burada tekrar almıyoruz.
+             */
+            var response = await _httpClient.PostAsJsonAsync<BasketViewModel>("baskets", basketViewModel);
+
+            return response.IsSuccessStatusCode;
+
+
         }
     }
 }
