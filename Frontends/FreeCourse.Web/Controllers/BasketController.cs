@@ -1,4 +1,5 @@
 ﻿using FreeCourse.Web.Models.Baskets;
+using FreeCourse.Web.Models.Discounts;
 using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,20 @@ namespace FreeCourse.Web.Controllers
         {
             await _basketService.RemoveBasketItem(courseId);
             //yukarıdaki kodun true-false'unu kontrol et. var result = await _basketService.RemoveBasketItem(courseId); diyip if ile kontrol edilebilir.
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> ApplyDiscount(DiscountApplyInput discountApplyInput)
+        {
+            var discountStatus = await _basketService.ApplyDiscount(discountApplyInput.Code);
+            /*desc
+             *tempData içerisinde discountStatus'tan ne geldiğini tut. TempData kullandık çünkü bir request'ten bir diğer request'e data taşımak için kullanmamız gerekir. Cookie ile beraber datayı taşır.
+             */
+            TempData["discountStatus"] = discountStatus;
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> CancelApplyDiscount()
+        {
+            await _basketService.CancelApplyDiscount();
             return RedirectToAction(nameof(Index));
         }
     }
