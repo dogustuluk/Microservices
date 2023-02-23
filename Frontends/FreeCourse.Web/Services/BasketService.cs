@@ -52,7 +52,7 @@ namespace FreeCourse.Web.Services
             await CancelApplyDiscount();
             //basket'i al
             var basket = await Get();
-            if (basket == null || basket.DiscountCode == null)
+            if (basket == null)
             {
                 return false;
             }
@@ -62,9 +62,8 @@ namespace FreeCourse.Web.Services
             {
                 return false;
             }
-            //hasDiscount varsa
-            basket.DiscountRate = hasDiscount.Rate;
-            basket.DiscountCode = hasDiscount.Code;
+            //hasDiscount varsa DiscountRate ve DiscountCode'u ver.
+            basket.ApplyDiscount(hasDiscount.Code, hasDiscount.Rate);
 
             await SaveOrUpdate(basket);
             return true;
@@ -74,13 +73,13 @@ namespace FreeCourse.Web.Services
         {
             //önce basket'i al.basket'in içerisinde iptal edicez. 
             var basket = await Get();
-            if (basket != null || basket.DiscountCode == null)
+            if (basket == null || basket.DiscountCode == null)
             {
                 return false;
             }
 
-            //mevcut olan indirim kodunu null'a set et
-            basket.DiscountCode = null;
+            //mevcut olan indirim kodunu ve indirim tutarını null'a set et
+            basket.CancelDiscount();
             //basket'i tekrar update et.
             await SaveOrUpdate(basket);
             return true;
@@ -106,6 +105,8 @@ namespace FreeCourse.Web.Services
 
             //BasketsController'daki Get metodundan BasketDto gelir. Bunu BasketViewModel'a dönüştürmemiz gereklidir.
             var basketViewModel = await response.Content.ReadFromJsonAsync<Response<BasketViewModel>>();
+
+            //discount service'e bağlanıp elimizdeki discountCode ile discountRate'i almamıza gerek yoktur.
 
             return basketViewModel.Data;
 
