@@ -30,6 +30,8 @@ namespace FreeCourse.Web.Extensions
             {
                 opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.PhotoStock.Path}");
             }).AddHttpMessageHandler<ClientCredentialTokenHandler>();
+            
+            //identity
             services.AddHttpClient<IUserService, UserService>(opt =>
             {
                 //UserService içerisinde kullanmış olduğum httpClient'ın base uri'si alt satıda vermiş olduğum BaseUri olacaktır.
@@ -53,6 +55,12 @@ namespace FreeCourse.Web.Extensions
             services.AddHttpClient<IPaymentService, PaymentService>(opt =>
             {
                 opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.Payment.Path}");
+            }).AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
+
+            //order
+            services.AddHttpClient<IOrderService, OrderService>(opt =>
+            {
+                opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.Order.Path}");
             }).AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
         }
     }
