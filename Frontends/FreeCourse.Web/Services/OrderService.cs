@@ -4,6 +4,7 @@ using FreeCourse.Web.Models.FakePayments;
 using FreeCourse.Web.Models.Orders;
 using FreeCourse.Web.Services.Interfaces;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -88,13 +89,13 @@ namespace FreeCourse.Web.Services
             {
                 //response'u 5sn içerisinde tekrar gerçekleştirecek bir reTry mekanizması kur.
                 //loglama yap
-                return new OrderCreatedViewModel() { Error="Sipariş Oluşturulamadı", IsSuccessful=false };
+                return new OrderCreatedViewModel() { Error = "Sipariş Oluşturulamadı", IsSuccessful = false };
             }
             //ödeme gerçekleşti ve sipariş oluştu
 
             //var responseString = response.Content.ReadAsStringAsync(); //debug yapmak için yazdık.
-            
-            var orderCreatedViewModel =  await response.Content.ReadFromJsonAsync<Response<OrderCreatedViewModel>>();
+
+            var orderCreatedViewModel = await response.Content.ReadFromJsonAsync<Response<OrderCreatedViewModel>>();
 
             orderCreatedViewModel.Data.IsSuccessful = true;//true'ya set ediyoruz çünkü OrderController içerisinde if ile bunun kontrolünü yapıyoruz.
 
@@ -114,9 +115,63 @@ namespace FreeCourse.Web.Services
             return response.Data;
         }
 
-        public Task SuspendOrder(CheckoutInfoInput checkoutInfoInput)
+        public async Task<OrderSuspendViewModel> SuspendOrder(CheckoutInfoInput checkoutInfoInput)
         {
-            throw new System.NotImplementedException();
+            //FakePayment'a istek gerçekleştir.
+
+            //basket'i al
+            var basket = await _basketService.Get();
+
+            //sipariş oluştur
+            var orderCreateInput = new OrderCreateInput()
+            {
+                BuyerId = _sharedIdentityService.GetUserId,
+                Address = new AddressCreateInput()
+                {
+                    Province = checkoutInfoInput.Province,
+                    District = checkoutInfoInput.District,
+                    Street = checkoutInfoInput.Street,
+                    Line = checkoutInfoInput.Line,
+                    ZipCode = checkoutInfoInput.ZipCode
+                },
+            };
+            //sepetteki ürünleri al
+            basket.BasketItems.ForEach(x =>
+            {
+                var orderItem = new OrderItemCreateInput()
+                {
+                    ProductId = x.CourseId,
+                    ProductName = x.CourseName,
+                    PictureUrl = "",
+                    Price = x.GetCurrentPrice
+                };
+                orderCreateInput.OrderItems.Add(orderItem);
+            });
+
+            var paymentInfoInput = new PaymentInfoInput()
+            {
+                CardName = checkoutInfoInput.CardName,
+                CardNumber = checkoutInfoInput.CardNumber,
+                CVV = checkoutInfoInput.CVV,
+                Expiration = checkoutInfoInput.Expiration,
+                TotalPrice = basket.TotalPrice,
+                Order = orderCreateInput
+
+            };
+
+            //payment'a istek yap
+            var responsePayment = await _paymentService.ReceivePayment(paymentInfoInput);
+            if (!responsePayment)
+            {
+                return new OrderSuspendViewModel() { Error = "Ödeme Alınamadı", IsSuccessful = false };
+            }
+
+            return new OrderSuspendViewModel() { IsSuccessful = true };
+
         }
+
     }
+
 }
+
+
