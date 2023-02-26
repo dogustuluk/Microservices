@@ -1,6 +1,7 @@
 ﻿using FreeCourse.Web.Models.Orders;
 using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace FreeCourse.Web.Controllers
@@ -21,7 +22,7 @@ namespace FreeCourse.Web.Controllers
             //basket cart'ı al
             var basket = await _basketService.Get();
             ViewBag.basket = basket;
-            
+
             return View(new CheckoutInfoInput());
         }
         [HttpPost]
@@ -35,16 +36,28 @@ namespace FreeCourse.Web.Controllers
                 return RedirectToAction(nameof(Checkout));
             }
              */
-            var orderStatus = await _orderService.CreateOrder(checkoutInfoInput);
-            if (!orderStatus.IsSuccessful)
+
+            //1.yol senkron iletişim
+            //var orderStatus = await _orderService.CreateOrder(checkoutInfoInput);
+
+            //2.yol asenkron iletişim
+            var orderSuspend = await _orderService.SuspendOrder(checkoutInfoInput);
+            if (!orderSuspend.IsSuccessful)
             {
                 var basket = await _basketService.Get();
                 ViewBag.basket = basket;
-                ViewBag.error = orderStatus.Error;
+                ViewBag.error = orderSuspend.Error;
                 return View();
             }
 
-            return RedirectToAction(nameof(SuccessfullCheckout), new { orderId = orderStatus.OrderId });
+            //1.yol senkron iletişim.
+            //return RedirectToAction(nameof(SuccessfullCheckout), new { orderId = orderStatus.OrderId });
+
+            //2.yol asenkron iletişim
+            /*Random Id
+             * SuccessfullCheckout metodunda orderId atadığımız için burada bir orderId vermemiz gerekir. Fakat orderSuspend üzerinden bir orderId gelmemekte. Burada random bir orderId atarak bir çözüm geliştirdik. Eğer bunun önüne geçmek istersek başta bir int değer geçmemiz yeterliydi. Yani FakePayment mikroservisi içerisinde bulunan FakePaymentsController'da  Response'a NoContent geçtik. Burada NoContent yerine bir dto dönseydik daha net bir çözüm geliştirmiş olurduk. Burada ödemenin id'sini bulabilirdik. Bu şekilde yapsaydık eğer ödeme no ile sipariş no'yu birbirinden ayırmış olurduk.
+             */
+            return RedirectToAction(nameof(SuccessfullCheckout), new { orderId = new Random().Next(1, 1000) });
         }
         public IActionResult SuccessfullCheckout(int orderId)
         {
