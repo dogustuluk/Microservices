@@ -74,7 +74,7 @@ namespace FreeCourse.Web.Services
                 var orderItem = new OrderItemCreateInput
                 {
                     ProductId = x.CourseId,
-                    Price = x.Price,
+                    Price = x.GetCurrentPrice,
                     PictureUrl = "",
                     ProductName = x.CourseName
                 };
@@ -91,10 +91,17 @@ namespace FreeCourse.Web.Services
                 return new OrderCreatedViewModel() { Error="Sipariş Oluşturulamadı", IsSuccessful=false };
             }
             //ödeme gerçekleşti ve sipariş oluştu
-            return await response.Content.ReadFromJsonAsync<OrderCreatedViewModel>();
 
+            //var responseString = response.Content.ReadAsStringAsync(); //debug yapmak için yazdık.
             
+            var orderCreatedViewModel =  await response.Content.ReadFromJsonAsync<Response<OrderCreatedViewModel>>();
 
+            orderCreatedViewModel.Data.IsSuccessful = true;//true'ya set ediyoruz çünkü OrderController içerisinde if ile bunun kontrolünü yapıyoruz.
+
+            //ödeme işlemi gerçekleştikten sonra sepeti silmemiz gerekir.
+            await _basketService.Delete();
+
+            return orderCreatedViewModel.Data;
         }
 
         public async Task<List<OrderViewModel>> GetOrder()
