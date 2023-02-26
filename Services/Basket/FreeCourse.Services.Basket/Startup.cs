@@ -63,7 +63,7 @@ namespace FreeCourse.Services.Basket
             {
                 var redisSettings = sp.GetRequiredService<IOptions<RedisSettings>>().Value;
 
-                var redis = new RedisService(redisSettings.Host,redisSettings.Port);
+                var redis = new RedisService(redisSettings.Host, redisSettings.Port);
 
                 redis.Connect();
 
