@@ -10,6 +10,10 @@ namespace FreeCourse.Shared.Messages
      */
     public class CreateOrderMessageCommand
     {
+        public CreateOrderMessageCommand()
+        {
+            OrderItems = new List<OrderItem>();
+        }
         public string BuyerId { get; set; }
         public List<OrderItem> OrderItems { get; set; }
         public Address Address { get; set; }
