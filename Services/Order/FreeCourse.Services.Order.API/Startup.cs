@@ -1,5 +1,8 @@
+using FreeCourse.Services.Order.Application.Consumers;
+using FreeCourse.Services.Order.Domain.OrderAggregate;
 using FreeCourse.Services.Order.Infrastructure;
 using FreeCourse.Shared.Services;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +36,31 @@ namespace FreeCourse.Services.Order.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //massTransit
+            services.AddMassTransit(x =>
+            {
+                //consumer'larý ekle
+                x.AddConsumer<CreateOrderMessageCommandConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(Configuration["RabbitMQUrl"], "/", host =>
+                    {
+                        host.Username("guest");
+                        host.Password("guest");
+                    });
+
+                    //haberdar et. Bu bir kuyruk ya da exchange olabilir. FakePayment mikroservisinde ReceivePayment metodunda hangi isimle gönderdiðimizi alýrýz.(create-order-service)
+                    cfg.ReceiveEndpoint("create-order-service", e =>
+                    {
+                        //e üzerinden consumer'i configure ediyoruz.
+                        e.ConfigureConsumer<CreateOrderMessageCommandConsumer>(context);
+                    });//alýcý kuyruðu tanýttýk.
+                });
+            });
+            //AddMassTransitHostedService
+            services.AddMassTransitHostedService();
+
             //identityServer
             var requireAuthorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
