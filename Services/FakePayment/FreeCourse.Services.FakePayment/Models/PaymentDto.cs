@@ -7,5 +7,7 @@
         public string Expiration { get; set; }
         public string CVV { get; set; }
         public decimal TotalPrice { get; set; }
+
+        public OrderDto Order { get; set; } //Sipariş ile ilgili tüm itemları bu dto ile göndermiş olduk.
     }
 }
