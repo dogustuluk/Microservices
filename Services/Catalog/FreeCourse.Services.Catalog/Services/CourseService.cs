@@ -3,11 +3,13 @@ using FreeCourse.Services.Catalog.Dtos;
 using FreeCourse.Services.Catalog.Models;
 using FreeCourse.Services.Catalog.Settings;
 using FreeCourse.Shared.Dtos;
+using Mass = MassTransit;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FreeCourse.Shared.Messages;
 
 namespace FreeCourse.Services.Catalog.Services
 {
@@ -16,13 +18,15 @@ namespace FreeCourse.Services.Catalog.Services
         private readonly IMongoCollection<Course> _courseCollection;
         private readonly IMongoCollection<Category> _categoryCollection;
         private readonly IMapper _mapper;
-        public CourseService(IMapper mapper, IDatabaseSettings databaseSettings)
+        private readonly Mass.IPublishEndpoint _publishEndpoint;
+        public CourseService(IMapper mapper, IDatabaseSettings databaseSettings, Mass.IPublishEndpoint publishEndpoint)
         {
             var client = new MongoClient(databaseSettings.ConnectionStrings);
             var database = client.GetDatabase(databaseSettings.DatabaseName);
             _courseCollection = database.GetCollection<Course>(databaseSettings.CourseCollectionName);
             _categoryCollection = database.GetCollection<Category>(databaseSettings.CategoryCollectionName);
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<Response<List<CourseDto>>> GetAllAsync()
@@ -102,6 +106,12 @@ namespace FreeCourse.Services.Catalog.Services
             {
                 return Response<NoContent>.Fail("Course not found", 404);
             }
+
+            /*eventual consistency publish
+             * burada fakePaymentController'daki gibi bir kuyruk ismi yazmıyoruz. Burda bir kuyruk ismi belirlememize gerek yok çünkü bu bir event. yani bir kuyruğa göndermiyoruz. bu bir exchange'e gidecek. bu exchange'e bir kuyruk oluşturarak subscribe olan mikroservislerimiz olacak. örnek vermek gerekirse Order mikroservisim exchange'e bir kuyrukla beraber subscribe olacak. Basket mikroservisi de yine aynı şekilde bir kuyruk oluşturup subscribe olacak. bu event'i dinleyen iki tane mikroservisimiz olacak çünkü her ikisi de içerisinde course name'i barındırıyor.
+             */
+            await _publishEndpoint.Publish<CourseNameChangedEvent>(new CourseNameChangedEvent { CourseId = updateCourse.Id, UpdatedName = courseUpdateDto.Name });
+
             return Response<NoContent>.Success(204);//body'si yok.
         }
 
