@@ -41,6 +41,7 @@ namespace FreeCourse.Services.Order.API
             {
                 //consumer'larý ekle
                 x.AddConsumer<CreateOrderMessageCommandConsumer>();
+                x.AddConsumer<CourseNameChangedEventConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -56,6 +57,13 @@ namespace FreeCourse.Services.Order.API
                         //e üzerinden consumer'i configure ediyoruz.
                         e.ConfigureConsumer<CreateOrderMessageCommandConsumer>(context);
                     });//alýcý kuyruðu tanýttýk.
+
+                    //eventual consistency için; exchange'deki mesajý almak için bir kuyruk oluþturup ilgili exhange'e maplemek gerekli. Bu iþlemi massTransit gerçekleþtirecek
+                    cfg.ReceiveEndpoint("course-name-changed-event-order-service", e =>
+                    {
+                        e.ConfigureConsumer<CourseNameChangedEventConsumer>(context);
+                    });
+
                 });
             });
             //AddMassTransitHostedService
