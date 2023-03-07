@@ -1,6 +1,8 @@
+using FreeCourse.Services.Basket.Consumers;
 using FreeCourse.Services.Basket.Services;
 using FreeCourse.Services.Basket.Settings;
 using FreeCourse.Shared.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +35,26 @@ namespace FreeCourse.Services.Basket
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //massTransit for eventualConsistency
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<CourseNameChangedForBasketEventConsumer>();
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(Configuration["RabbitMQUrl"], "/", host =>
+                    {
+                        host.Username("guest");
+                        host.Password("guest");
+                    });
+
+                    cfg.ReceiveEndpoint("course-name-changed-for-basket-basket-service", e =>
+                    {
+                        e.ConfigureConsumer<CourseNameChangedForBasketEventConsumer>(context);
+                    });
+                });
+            });
+            services.AddMassTransitHostedService();
+
             //burada subId beklediðimiz için bir policy yaratmamýz gerekir tüm controllerlarda authorize filter'ý geçmek için. Yani burada authenticate olmuþ bir kullanýcý mutlaka lazýmdýr diye belirtiyoruz.
             var requireAuthorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 

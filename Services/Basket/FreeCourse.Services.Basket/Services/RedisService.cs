@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FreeCourse.Services.Basket.Services
 {
@@ -22,5 +24,8 @@ namespace FreeCourse.Services.Basket.Services
 
         //db'yi verir.
         public IDatabase GetDb(int db = 1) => _connectionMultiplexer.GetDatabase(db);
+
+        //masstransit için. rediste sadece basket nesnelerini tuttuğumuz için şuanlık sıkıntı yok.
+        public List<RedisKey> GetKeys() => _connectionMultiplexer.GetServer($"{_host}:{_port}").Keys(1).ToList();
     }
 }
