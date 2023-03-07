@@ -38,7 +38,7 @@ namespace FreeCourse.Services.Basket
             //massTransit for eventualConsistency
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<CourseNameChangedForBasketEventConsumer>();
+                x.AddConsumer<CourseNameAndPriceChangedForBasketEventConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(Configuration["RabbitMQUrl"], "/", host =>
@@ -49,7 +49,7 @@ namespace FreeCourse.Services.Basket
 
                     cfg.ReceiveEndpoint("course-name-changed-for-basket-basket-service", e =>
                     {
-                        e.ConfigureConsumer<CourseNameChangedForBasketEventConsumer>(context);
+                        e.ConfigureConsumer<CourseNameAndPriceChangedForBasketEventConsumer>(context);
                     });
                 });
             });

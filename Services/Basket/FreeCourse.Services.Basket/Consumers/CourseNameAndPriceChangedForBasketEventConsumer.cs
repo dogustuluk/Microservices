@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace FreeCourse.Services.Basket.Consumers
 {
-    public class CourseNameChangedForBasketEventConsumer : IConsumer<CourseNameChangedForBasketEvent>
+    public class CourseNameAndPriceChangedForBasketEventConsumer : IConsumer<CourseNameAndPriceChangedForBasketEvent>
     {
         private readonly RedisService _redisService;
         
-        public CourseNameChangedForBasketEventConsumer(RedisService redisService)
+        public CourseNameAndPriceChangedForBasketEventConsumer(RedisService redisService)
         {
             _redisService = redisService;
             
         }
 
-        public async Task Consume(ConsumeContext<CourseNameChangedForBasketEvent> context)
+        public async Task Consume(ConsumeContext<CourseNameAndPriceChangedForBasketEvent> context)
         {
             var keys = _redisService.GetKeys();
             if (keys != null)
@@ -30,9 +30,9 @@ namespace FreeCourse.Services.Basket.Consumers
                     var basketDto = JsonConvert.DeserializeObject<BasketDto>(basket);
                     basketDto.basketItems.ForEach(x =>
                     {
-                        x.CourseName = context.Message.UpdatedBasketCourseName;
                         x.CourseId = context.Message.CourseId;
-                       
+                        x.CourseName = context.Message.UpdatedBasketCourseName;
+                        x.Price = context.Message.UpdatedCoursePrice;
                     });
                     await _redisService.GetDb().StringSetAsync(key, JsonConvert.SerializeObject(basketDto));
                 }

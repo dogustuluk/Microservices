@@ -111,7 +111,7 @@ namespace FreeCourse.Services.Catalog.Services
              * burada fakePaymentController'daki gibi bir kuyruk ismi yazmıyoruz. Burda bir kuyruk ismi belirlememize gerek yok çünkü bu bir event. yani bir kuyruğa göndermiyoruz. bu bir exchange'e gidecek. bu exchange'e bir kuyruk oluşturarak subscribe olan mikroservislerimiz olacak. örnek vermek gerekirse Order mikroservisim exchange'e bir kuyrukla beraber subscribe olacak. Basket mikroservisi de yine aynı şekilde bir kuyruk oluşturup subscribe olacak. bu event'i dinleyen iki tane mikroservisimiz olacak çünkü her ikisi de içerisinde course name'i barındırıyor.
              */
             await _publishEndpoint.Publish<CourseNameChangedEvent>(new CourseNameChangedEvent { CourseId = updateCourse.Id, UpdatedName = courseUpdateDto.Name });
-            await _publishEndpoint.Publish<CourseNameChangedForBasketEvent>(new CourseNameChangedForBasketEvent { CourseId = updateCourse.Id, UserId = updateCourse.UserId, UpdatedBasketCourseName = courseUpdateDto.Name });
+            await _publishEndpoint.Publish<CourseNameAndPriceChangedForBasketEvent>(new CourseNameAndPriceChangedForBasketEvent { CourseId = updateCourse.Id, UserId = updateCourse.UserId, UpdatedBasketCourseName = courseUpdateDto.Name, UpdatedCoursePrice = courseUpdateDto.Price });
 
             return Response<NoContent>.Success(204);//body'si yok.
         }
